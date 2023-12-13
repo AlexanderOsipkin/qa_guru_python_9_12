@@ -5,7 +5,7 @@ from tests import resource
 
 def test_registration_with_allure_steps():
     with allure.step("Открываем форму для заполнения данных"):
-        browser.open('https://demoqa.com/automation-practice-form')
+        browser.open('/automation-practice-form')
 
     with allure.step("Проверяем что форма, которую мы открыли верная"):
         browser.element('.main-header').should(have.text('Practice Form'))
