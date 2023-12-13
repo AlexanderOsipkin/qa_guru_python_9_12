@@ -1,11 +1,15 @@
 from selene import browser, have, be, by
 import allure
 from tests import resource
+import conftest
 
 
-def test_registration_with_allure_steps():
+@allure.title("Заполнение учебной формы регистрации")
+def test_registration_form():
+    browser = conftest.browser_setup()
+
     with allure.step("Открываем форму для заполнения данных"):
-        browser.open('/automation-practice-form')
+        browser.open('https://demoqa.com/automation-practice-form')
 
     with allure.step("Проверяем что форма, которую мы открыли верная"):
         browser.element('.main-header').should(have.text('Practice Form'))
