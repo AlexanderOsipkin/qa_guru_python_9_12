@@ -1,95 +1,46 @@
-from selene import browser, have, be, by
+from demoqa_tests.pages.registration_page import RegistrationPage
 import allure
-from tests import resource
-import conftest
 
 
-@allure.title("Заполнение учебной формы регистрации")
-def test_registration_form():
-    browser = conftest.browser_setup()
+@allure.title('Success student registration')
+def test_registration():
+    registration_page = RegistrationPage()
 
-    with allure.step("Открываем форму для заполнения данных"):
-        browser.open('https://demoqa.com/automation-practice-form')
+    with allure.step('Open registration page'):
+        registration_page.open_registration_page()
 
-    with allure.step("Проверяем что форма, которую мы открыли верная"):
-        browser.element('.main-header').should(have.text('Practice Form'))
+    # WHEN
+    with allure.step('Fill the form'):
+        registration_page.fill_first_name('Alexander')
+        registration_page.fill_last_name('Osipkin')
+        registration_page.fill_user_email('alex-test.qaguru@test.com')
+        registration_page.gender_selection('Male')
+        registration_page.fill_user_phone_number('1234567890')
+        registration_page.fill_date_of_birth('1996', 'June', '11')
+        registration_page.select_user_subject('English')
+        registration_page.user_hobby_checkbox('Sports')
+        registration_page.user_picture('kot-kartinka.jpg')
+        registration_page.user_current_adress('Saint-Petersburg, Pushkin street 42')
+        registration_page.user_state('Uttar Pradesh')
+        registration_page.user_city('Agra')
 
-    with allure.step(
-        "Проверяем что поле Имя пустое и если это так то вводим " "значение"
-    ):
-        browser.element('#firstName').should(be.blank).type('Alexander')
+    with allure.step('Submit form'):
+        registration_page.submit_the_form()
 
-    with allure.step(
-        "Проверяем что поле Фамилия пустое и если это так то вводим значение"
-    ):
-        browser.element('#lastName').should(be.blank).type('Osipkin')
-
-    with allure.step(
-        "Проверяем что поле Email пустое и если это так то вводим " "значение"
-    ):
-        browser.element('#userEmail').should(be.blank).type(
-            'alex-test.qaguru' '@test.com'
+    # THEN
+    with allure.step('Check results'):
+        registration_page.should_registered_user_with(
+            'Alexander Osipkin',
+            'alex-test.qaguru@test.com',
+            'Male',
+            '1234567890',
+            '11 June,1996',
+            'English',
+            'Sports',
+            'kot-kartinka.jpg',
+            'Saint-Petersburg, Pushkin street 42',
+            'Uttar Pradesh Agra',
         )
 
-    with allure.step("Активируем radio batton"):
-        browser.element('#gender-radio-1').double_click()
-
-    with allure.step("Вводим валидный номер телефона"):
-        browser.element('#userNumber').should(be.blank).type('1234567890')
-
-    with allure.step("Выбираем дату рождения через элементы календаря"):
-        browser.element('#dateOfBirthInput').click()
-        browser.element('.react-datepicker__month-select').click().element(
-            by.text('June')
-        ).click()
-        browser.element('.react-datepicker__year-select').click().element(
-            by.text('1996')
-        ).click()
-        browser.element('.react-datepicker__day--011').click()
-
-    with allure.step("вводим значение в поле subjects"):
-        browser.element('#subjectsInput').should(be.blank).type('English').press_enter()
-
-    with allure.step("Активируем чекбокс хобби"):
-        browser.element('[for="hobbies-checkbox-1"]').click()
-
-    with allure.step("Выбираем и загружаем картинку"):
-        browser.element('#uploadPicture').send_keys(resource.path('kot-kartinka.jpg'))
-
-    with allure.step(
-        "Проверяем что поле Адрес пустое и если это так то вводим " "значение"
-    ):
-        browser.element('#currentAddress').should(be.blank).type(
-            'Saint-Petersburg, Pushkin street 42'
-        )
-
-    with allure.step("Выбираем Штат"):
-        browser.element('#react-select-3-input').type('Uttar Pradesh').press_enter()
-
-    with allure.step("Выбираем город"):
-        browser.element('#react-select-4-input').type('Agra').press_enter()
-
-    with allure.step("Подтверждаем введеные значения"):
-        browser.element('#submit').press_enter()
-
-    with allure.step("Проверяем что форма заполнена корректно"):
-        browser.element('.modal-header').should(
-            have.text('Thanks for submitting the form')
-        )
-        browser.element('.table').should(
-            have.text(
-                'Alexander Osipkin'
-                and 'alex-test.qaguru@test.com'
-                and 'Male'
-                and '1234567890'
-                and '11 June,1996'
-                and 'English'
-                and 'Sports'
-                and 'kot-kartinka.jpeg'
-                and 'Saint-Petersburg, Pushkin street 42'
-                and 'Uttar Pradesh Agra'
-            )
-        )
-
-    with allure.step("Закрываем форму"):
-        browser.element('#closeLargeModal').press_enter()
+    with allure.step('Close the form'):
+        registration_page.close_the_form()
